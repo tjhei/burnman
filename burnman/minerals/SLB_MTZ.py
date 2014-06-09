@@ -175,15 +175,15 @@ class fe_ringwoodite (Mineral):
             'err_eta_s_0' : 1.0 }
 
 
-class mg_olivine(Material):
+class pure_olivine_transitions(Material):
     """
-    stitches together differen MG_endmember components through the mantle transition zone. This is extremely simplified.
+    stitches together differen silicate phases through the mantle transition zone. This is an extremely simplified composition.
     Clapeyron slopes for the 410, 520, and 660, respectively, are taken from Katsuro et al. 2004, Inoue et al. 2006,
-    and Fei et al. 2004.
+    and Fei et al. 2004. Postperovskite transition is estimated from Grocholski et al. 2012 and Catalli et al. 2009. 
+    Transitions thicknesses are ignored.
     """
-    def __init__(self,fe_num, amount_pv):
+    def __init__(self,fe_num):
         self.fe_num = fe_num
-        self.amount_pv = amount_pv
 
     def set_method(self, method):
         self.method = method
@@ -191,8 +191,12 @@ class mg_olivine(Material):
     def unroll(self):
         fractions = []
         mats = []
-        if self.pressure >= 28.71e9 - 2.9e6*self.temperature: #Yu et al. 2007
-            fractions = [self.amount_pv, 1.0 - self.amount_pv]
+        if self.pressure >= 100e9 + 6.5e6*self.temperature: #estimated from Grocholski et al. 2012 and Catalli et al. 2009 (basically for MORB)
+            fractions = [0.5, 0.5]
+            mats = [mg_fe_postperovskite(self.fe_num), ferropericlase(self.fe_num)]
+        
+        elif self.pressure >= 28.71e9 - 2.9e6*self.temperature: #Yu et al. 2007
+            fractions = [0.5, 0.5]
             mats = [mg_fe_perovskite(self.fe_num), ferropericlase(self.fe_num)]
 
         elif self.pressure >= 13.1e9 + 4.11e6*self.temperature: #Inoue et al. 2006
@@ -210,6 +214,7 @@ class mg_olivine(Material):
         for m in mats:
             m.set_method(self.method)
             m.set_state(self.pressure, self.temperature)
+
         return fractions, mats
 
 
@@ -315,6 +320,12 @@ class mg_fe_perovskite(HelperSolidSolution):
         molar_fraction = [1. - fe_num, 0.0 + fe_num] # keep the 0.0 +, otherwise it is an array sometimes
         HelperSolidSolution.__init__(self, base_materials, molar_fraction)
 
+class mg_fe_postperovskite(HelperSolidSolution):
+    def __init__(self, fe_num):
+        base_materials = [mg_postperovskite(), fe_postperovskite()]
+        molar_fraction = [1. - fe_num, 0.0 + fe_num] # keep the 0.0 +, otherwise it is an array sometimes
+        HelperSolidSolution.__init__(self, base_materials, molar_fraction)
+
 class mg_fe_olivine(HelperSolidSolution):
     def __init__(self, fe_num):
         base_materials = [forsterite(), fayalite()]
@@ -390,6 +401,60 @@ class fe_perovskite(Mineral):
 
 
 
+class mg_postperovskite(Mineral):
+    """
+        Stixrude & Lithgow-Bertelloni 2011 and references therein
+        """
+    def __init__(self,perturb=[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]):
+        self.params = {
+            'equation_of_state':'slb3',
+            'V_0': 24.42e-6,
+            'K_0': 231.0e9,
+            'err_K_0': 1.e9,
+            'Kprime_0': 4.0,
+            'err_Kprime_0': 0.1,
+            'G_0': 150.0e9,
+            'err_G_0': 4.e9,
+            'Gprime_0': 2.0,
+            'err_Gprime_0' : 0.1,
+            'molar_mass': .1000,
+            'n': 5,
+            'Debye_0': 855.,
+            'err_Debye_0': 7.,
+            'grueneisen_0': 1.89,
+            'err_grueneisen_0':.03,
+            'q_0': 1.1,
+            'err_q_0': .1,
+            'eta_s_0': 1.2,
+            'err_eta_s_0':.2}
+
+
+class fe_postperovskite(Mineral):
+    """
+        Stixrude & Lithgow-Bertelloni 2011 and references therein
+        """
+    def __init__(self,perturb=[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]):
+        self.params = {
+            'equation_of_state':'slb3',
+            'V_0': 25.46e-6,
+            'K_0': 231.0e9,
+            'err_K_0':10e9,
+            'Kprime_0': 4.0,
+            'err_Kprime_0':1.,
+            'G_0': 129.0e9,
+            'err_G_0':5e9,
+            'Gprime_0': 1.4,
+            'err_Gprime_0':0.1,
+            'molar_mass': .1319,
+            'n': 5,
+            'Debye_0': 782.,
+            'err_Debye_0':52.,
+            'grueneisen_0': 1.89,
+            'err_grueneisen_0':.3,
+            'q_0': 1.1,
+            'err_q_0':1.0,
+            'eta_s_0': 1.4,
+            'err_eta_s_0':1.0}
 
 class mg_fe_perovskite_pt_dependent(HelperFeDependent):
     def __init__(self, iron_number_with_pt, idx):
