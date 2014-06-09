@@ -26,9 +26,8 @@ if __name__ == "__main__":
     
     method = 'slb3'
 
-    
-    amount_perovskite = 0.8
-    rock = minerals.SLB_MTZ.mg_olivine(0.1, amount_perovskite)
+
+    rock = minerals.SLB_MTZ.pure_olivine_transitions(0.1)
     rock.set_method(method)
     
     
@@ -51,7 +50,7 @@ if __name__ == "__main__":
     parray=np.repeat(p,len(T))
     
     density, vp, vs, vphi, K, G = burnman.velocities_from_rock(rock, parray, tarray)
-    
+    print vs
     mat_vs = np.reshape(vs,[len(p),len(T)]);
     mat_vp = np.reshape(vp,[len(p),len(T)]);
     mat_vphi = np.reshape(vphi,[len(p),len(T)]);
