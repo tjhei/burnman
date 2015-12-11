@@ -10,6 +10,7 @@ from . import birch_murnaghan as bm
 from . import modified_tait as mt
 from . import hp 
 from . import cork
+from . import vinet
 from .equation_of_state import EquationOfState
 
 
@@ -21,6 +22,8 @@ def create(method):
     if isinstance(method, str):
         if method == "slb2":
             return slb.SLB2()
+        elif method == "V":
+            return v.Vinet()
         elif method == "mgd2":
             return mgd.MGD2()
         elif method == "mgd3":
@@ -31,6 +34,8 @@ def create(method):
             return bm.BM2()
         elif method == "bm3":
             return bm.BM3()
+        elif method == "bm4":
+            return bm.BM4()
         elif method == "mt":
             return mt.MT()
         elif method == "hp_tmt":
