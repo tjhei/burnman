@@ -152,7 +152,7 @@ class Fe_Dewaele(Mineral):
     """
     def __init__(self):
         self.params = {
-                'equation_of_state': 'Vinet',
+                'equation_of_state': 'vinet',
                 'V_0': 6.75e-6,
                 'K_0': 163.4e9,
                 'Kprime_0': 5.38,
@@ -166,7 +166,7 @@ class Fe_Anderson(Mineral):
     """
     def __init__(self):
         self.params = {
-                'equation_of_state':'Vinet',
+                'equation_of_state':'vinet',
                 'V_0': (6.72e-6),
                 'K_0': 156.2e9,
                 'Kprime_0': 6.08,

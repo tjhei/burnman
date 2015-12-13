@@ -21,7 +21,7 @@ def bulk_modulus(volume, params):
     K = (params['K_0']*pow(x,-2./3.))*(1+((eta*pow(x,1./3.)+1.)*(1.-pow(x,1./3.))))*exp(eta*(1.-pow(x,1./3.)))
     return K
 
-def Vinet(x, params):
+def vinet(x, params):
     """
     equation for the third order Vinet equation of state, returns
     pressure in the same units that are supplied for the reference bulk
@@ -41,7 +41,7 @@ def volume(pressure, params):
     V = opt.brentq(func, 0.1*params['V_0'], 1.5*params['V_0'])
     return V
 
-class vinet(eos.EquationOfState):
+class Vinet(eos.EquationOfState):
     """
     Base class for the isothermal Vinet equation of state.  This is third order in strain, and
     has no temperature dependence.
