@@ -3,7 +3,7 @@
 
 
 import scipy.optimize as opt
-import equation_of_state as eos
+from . import equation_of_state as eos
 import warnings
 from math import exp
 
