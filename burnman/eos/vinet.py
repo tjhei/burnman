@@ -21,7 +21,7 @@ def bulk_modulus(volume, params):
     K = (params['K_0']*pow(x,-2./3.))*(1+((eta*pow(x,1./3.)+1.)*(1.-pow(x,1./3.))))*exp(eta*(1.-pow(x,1./3.)))
     return K
 
-def vinet(x, params):
+def Vinet(x, params):
     """
     equation for the third order Vinet equation of state, returns
     pressure in the same units that are supplied for the reference bulk
@@ -37,7 +37,7 @@ def volume(pressure, params):
     pressure :math:`[Pa]`. Returns molar volume in :math:`[m^3]`
     """
 
-    func = lambda x: vinet(x/params['V_0'], params) - pressure
+    func = lambda x: Vinet(x/params['V_0'], params) - pressure
     V = opt.brentq(func, 0.1*params['V_0'], 1.5*params['V_0'])
     return V
 
