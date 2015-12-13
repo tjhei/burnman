@@ -6,6 +6,7 @@ import scipy.optimize as opt
 import equation_of_state as eos
 import warnings
 from math import exp
+
 def bulk_modulus(volume, params):
     """
     compute the bulk modulus as per the third order
@@ -20,7 +21,6 @@ def bulk_modulus(volume, params):
     K = (params['K_0']*pow(x,-2./3.))*(1+((eta*pow(x,1./3.)+1.)*(1.-pow(x,1./3.))))*exp(eta*(1.-pow(x,1./3.)))
     return K
 
-
 def vinet(x, params):
     """
     equation for the third order Vinet equation of state, returns
@@ -31,13 +31,6 @@ def vinet(x, params):
     return 3.*params['K_0'] * (pow(x, -2./3.))*(1.-(pow(x,1./3.))) \
     * exp(eta*(1-pow(x,1/3.)))
 
-def density(pressure, params):
-    """
-    Get the Vinet density at a reference temperature for a given
-    pressure :math:`[Pa]`. Returns density in :math:`[kg/m^3]'
-    """
-    return params['molar_mass']/volume(pressure,params)
-
 def volume(pressure, params):
     """
     Get the Vinet volume at a reference temperature for a given
@@ -47,30 +40,6 @@ def volume(pressure, params):
     func = lambda x: vinet(x/params['V_0'], params) - pressure
     V = opt.brentq(func, 0.1*params['V_0'], 1.5*params['V_0'])
     return V
-
-def shear_modulus_second_order(volume, params):
-    """
-    Get the Vinet shear modulus at a reference temperature, for a
-    given volume.  Returns shear modulus in :math:`[Pa]` (the same units as in
-    params['G_0']).  This uses a second order finite strain expansion
-    """
-
-    x = params['V_0']/volume
-    G=params['G_0'] * pow(x,5./3.)*(1.-0.5*(pow(x,2./3.)-1.)*(5.-3.*params['Gprime_0']*params['K_0']/params['G_0']))
-    return G
-
-def shear_modulus_third_order(volume, params):
-    """
-    Get the Vinet shear modulus at a reference temperature, for a
-    given volume.  Returns shear modulus in :math:`[Pa]` (the same units as in
-    params['G_0']).  This uses a third order finite strain expansion
-    """
-
-    x = params['V_0']/volume
-    f = 0.5*(pow(x, 2./3.) - 1.0)
-    G = pow((1. + 2*f), 5./2.)*(params['G_0']+(3.*params['K_0']*params['Gprime_0'] - 5.*params['G_0'])*f + (6.*params['K_0']*params['Gprime_0']-24.*params['K_0']-14.*params['G_0']+9./2. * params['K_0']*params['Kprime_0'])*f*f)
-    return G
-
 
 class Vinet(eos.EquationOfState):
     """
@@ -134,17 +103,15 @@ class Vinet(eos.EquationOfState):
         """
         Check for existence and validity of the parameters
         """
-     
-        #if G and Gprime are not included this is presumably deliberate,
-        #as we can model density and bulk modulus just fine without them,
-        #so just add them to the dictionary as nans
+
+        #G is not included in the Vinet EOS so we shall set them to NaN's
         if 'G_0' not in params:
             params['G_0'] = float('nan')
         if 'Gprime_0' not in params:
             params['Gprime_0'] = float('nan')
   
         #check that all the required keys are in the dictionary
-        expected_keys = ['V_0', 'K_0', 'Kprime_0', 'G_0', 'Gprime_0']
+        expected_keys = ['V_0', 'K_0', 'Kprime_0']
         for k in expected_keys:
             if k not in params:
                 raise KeyError('params object missing parameter : ' + k)
@@ -158,7 +125,3 @@ class Vinet(eos.EquationOfState):
             warnings.warn( 'Unusual value for K_0' , stacklevel=2)
         if params['Kprime_0'] < -5. or params['Kprime_0'] > 10.:
             warnings.warn( 'Unusual value for Kprime_0', stacklevel=2 )
-        if params['G_0'] < 0.0 or params['G_0'] > 1.e13:
-            warnings.warn( 'Unusual value for G_0', stacklevel=2 )
-        if params['Gprime_0'] < -5. or params['Gprime_0'] > 10.:
-            warnings.warn( 'Unusual value for Gprime_0', stacklevel=2 )

@@ -21,7 +21,22 @@ def bulk_modulus(volume, params):
     K = pow(1. + 2.*f, 5./2.)* (params['K_0'] + (3. * params['K_0'] * params['Kprime_0'] -  \
            5*params['K_0'] ) * f + 27./2. * (params['K_0']*params['Kprime_0'] - 4.* params['K_0'])*f*f)
     return K
+def bulk_modulus_fourth(volume, params):
+    """
+    compute the bulk modulus as per the third order
+    birch-murnaghan equation of state.  Returns bulk
+    modulus in the same units as the reference bulk
+    modulus.  Pressure must be in :math:`[Pa]`.
+    """
+    B1 = (params['K_0']*params['Kprime_prime_0'])+((params['Kprime_0']-4.)*(params['Kprime_0']-5.))+(59./9.)
+    B2 = (3.*params['K_0']*params['Kprime_prime_0'])+((params['Kprime_0']-4.)*((3.*params['Kprime_0'])-13.))+(129./9.)
+    B3 = (3.*params['K_0']*params['Kprime_prime_0'])+((params['Kprime_0']-4.)*((3.*params['Kprime_0'])-11.))+(105./9.)
+    B4 = (params['K_0']*params['Kprime_prime_0'])+((params['Kprime_0']-4.)*(params['Kprime_0']-3.))+(35./9.)
 
+    x = params['V_0']/volume
+
+    K = (9./16.)*params['K_0']*( (-5.*B1/3.)*pow(x,-5./3.)+(7.*B2/3.)*pow(x,-7./3.)-3*B3*pow(x,-3.)+(11.*B4/3.)*pow(x,-11./3.))
+    return K
 
 def birch_murnaghan(x, params):
     """
@@ -44,6 +59,21 @@ def volume(pressure, params):
     V = opt.brentq(func, 0.5*params['V_0'], 1.5*params['V_0'])
     return V
 
+def volume_fourth_order(pressure,params):
+
+    func = lambda x: birch_murnaghan_fourth(x/params['V_0'], params) - pressure
+    #print "down",birch_murnaghan_fourth(.1*params['V_0']/params['V_0'], params) - pressure
+    #print "up",birch_murnaghan_fourth(200.*params['V_0']/params['V_0'], params) - pressure
+    V = opt.brentq(func, .1*params['V_0'], 1.5*params['V_0'])
+    return V
+
+def birch_murnaghan_fourth(x, params):
+    B1 = (params['K_0']*params['Kprime_prime_0'])+((params['Kprime_0']-4.)*(params['Kprime_0']-5.))+(59./9.)
+    B2 = (3.*params['K_0']*params['Kprime_prime_0'])+((params['Kprime_0']-4.)*((3.*params['Kprime_0'])-13.))+(129./9.)
+    B3 = (3.*params['K_0']*params['Kprime_prime_0'])+((params['Kprime_0']-4.)*((3.*params['Kprime_0'])-11.))+(105./9.)
+    B4 = (params['K_0']*params['Kprime_prime_0'])+((params['Kprime_0']-4.)*(params['Kprime_0']-3.))+(35./9.)
+
+    return (9.*params['K_0']/16.)*((-B1*pow(x, -5./3.)+(B2*pow(x, -7./3.))) - (B3*pow(x, -3.))+(B4*pow(x, -11./3.)))
 def shear_modulus_second_order(volume, params):
     """
     Get the birch murnaghan shear modulus at a reference temperature, for a
@@ -78,18 +108,26 @@ class BirchMurnaghanBase(eos.EquationOfState):
         """
         Returns volume :math:`[m^3]` as a function of pressure :math:`[Pa]`.
         """
-        return volume(pressure,params)
+        if(self.order == 4):
+          return volume_fourth_order(pressure,params)
+        else:
+            return volume(pressure,params)
 
     def pressure(self, temperature, volume, params):
-        return birch_murnaghan(params['V_0']/volume, params)
+        if(self.order == 4):
+            return birch_murnaghan_fourth(volume/params['V_0'], params)
+        else:
+            return birch_murnaghan(params['V_0']/volume, params)
 
     def isothermal_bulk_modulus(self,pressure,temperature, volume, params):
         """
         Returns isothermal bulk modulus :math:`K_T` :math:`[Pa]` as a function of pressure :math:`[Pa]`,
         temperature :math:`[K]` and volume :math:`[m^3]`. 
         """
-        return bulk_modulus(volume, params)
-
+        if(self.order == 4):
+            return bulk_modulus_fourth(volume,params)
+        else:
+            return bulk_modulus(volume,params)
     def adiabatic_bulk_modulus(self,pressure, temperature, volume, params):
         """
         Returns adiabatic bulk modulus :math:`K_s` of the mineral. :math:`[Pa]`.
@@ -104,7 +142,8 @@ class BirchMurnaghanBase(eos.EquationOfState):
           return shear_modulus_second_order(volume,params)
         elif(self.order == 3):
           return shear_modulus_third_order(volume,params)
-
+        elif(self.order == 4):
+          return shear_modulus_third_order(volume,params)
     def heat_capacity_v(self,pressure, temperature, volume, params):
         """
         Since this equation of state does not contain temperature effects, simply return a very large number. :math:`[J/K/mol]`
@@ -183,3 +222,11 @@ class BM2(BirchMurnaghanBase):
     """
     def __init__(self):
         self.order=2
+
+class BM4(BirchMurnaghanBase):
+    """
+    Fourth order Birch Murnaghan isothermal equation of state.
+    This currently does not include shear modulus
+    """
+    def __init__(self):
+        self.order=4
