@@ -41,7 +41,7 @@ def volume(pressure, params):
     V = opt.brentq(func, 0.1*params['V_0'], 1.5*params['V_0'])
     return V
 
-class Vinet(eos.EquationOfState):
+class vinet(eos.EquationOfState):
     """
     Base class for the isothermal Vinet equation of state.  This is third order in strain, and
     has no temperature dependence.

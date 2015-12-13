@@ -408,3 +408,15 @@ other.fe_perovskite (SLB_2011.fe_perovskite)  2.549e-05  2.72e+11      4.1      
 other.mg_perovskite (SLB_2011.mg_perovskite)  2.445e-05  2.51e+11      4.1      1.73e+11      1.7  0.1003887 5.0   905.0         1.57  1.1     2.6
 other.periclase (SLB_2011.periclase)          1.124e-05  1.61e+11      3.8      1.31e+11      2.1  0.0403044 2.0   767.0         1.36  1.7     2.8
 other.wuestite (SLB_2011.wuestite)            1.226e-05  1.79e+11      4.9 59000000000.0      1.4  0.0718444 2.0   454.0         1.53  1.7    -0.1
+Name                                                  V_0       K_0 Kprime_0           G_0 Gprime_0 molar_mass   n Debye_0 grueneisen_0  q_0 eta_s_0
+other.Fe_Anderson                                6.72e-06 1.562e+11     6.08           nan      nan   0.055845   1                                  
+other.Fe_Dewaele                                 6.75e-06 1.634e+11     5.38           nan      nan   0.055845   1                                  
+other.Liquid_Fe_Anderson                      7.95626e-06 1.097e+11     4.66           nan      nan   0.055845                                      
+other.Speziale_fe_periclase_HS                   2.29e-05 1.575e+11     3.92           nan      nan    0.04567   2     587         1.46  1.2        
+other.Speziale_fe_periclase_LS                  2.149e-05  1.86e+11      4.6           nan      nan    0.04567   2   587.0         1.46  1.2        
+other.ZSB_2013_fe_perovskite                    2.549e-05  2.72e+11      4.1      1.33e+11      1.4     0.1319   5   871.0         1.57  1.1     2.3
+other.ZSB_2013_mg_perovskite                    2.445e-05 2.505e+11     4.01     1.729e+11     1.74        0.1   5   905.9         1.44 1.09    2.13
+other.fe_perovskite (SLB_2011.fe_perovskite)    2.549e-05  2.72e+11      4.1      1.33e+11      1.4  0.1319287 5.0   871.0         1.57  1.1     2.3
+other.mg_perovskite (SLB_2011.mg_perovskite)    2.445e-05  2.51e+11      4.1      1.73e+11      1.7  0.1003887 5.0   905.0         1.57  1.1     2.6
+other.periclase (SLB_2011.periclase)            1.124e-05  1.61e+11      3.8      1.31e+11      2.1  0.0403044 2.0   767.0         1.36  1.7     2.8
+other.wuestite (SLB_2011.wuestite)              1.226e-05  1.79e+11      4.9 59000000000.0      1.4  0.0718444 2.0   454.0       
