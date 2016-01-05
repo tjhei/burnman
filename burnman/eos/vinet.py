@@ -29,7 +29,7 @@ def vinet(x, params):
     """
     eta = (3./2.)*(params['Kprime_0']-1.)
     return 3.*params['K_0'] * (pow(x, -2./3.))*(1.-(pow(x,1./3.))) \
-    * exp(eta*(1-pow(x,1/3.)))
+    * exp(eta*(1.-pow(x,1./3.)))
 
 def volume(pressure, params):
     """
