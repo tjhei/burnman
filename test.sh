@@ -30,8 +30,9 @@ with open('$t') as f:
     CODE = compile(f.read(), '$t', 'exec')
     exec(CODE)
 EOF
-) >$t.tmp 2>&1
+) >$t.tmp 2>$t.tmp.error
 ret=$?
+cat $t.tmp.error >>$t.tmp
 if [ "$ret" -ne 0 ]
 then
   echo "!  $t ... FAIL";
@@ -106,8 +107,12 @@ cd ..
 
 echo "checking misc/ ..."
 cd misc
-for test in `ls paper*.py`
+for test in `ls *.py`
 do
+    [ $test == "gen_doc.py" ] && echo "  *** skipping $test !" && continue
+    [ $test == "helper_solid_solution.py" ] && echo "  *** skipping $test !" && continue
+    [ $test == "__init__.py" ] && echo "  *** skipping $test !" && continue
+    [ $test == "table.py" ] && echo "  *** skipping $test !" && continue
     [ $test == "paper_opt_pv_old.py" ] && echo "  *** skipping $test !" && continue
 
     testit $test $fulldir

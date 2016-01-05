@@ -11,6 +11,7 @@ from . import equation_of_state as eos
 from . import birch_murnaghan as bm
 from . import debye
 from .. import constants
+from ..tools import bracket
 
 class MGDBase(eos.EquationOfState):
     """
@@ -38,8 +39,11 @@ class MGDBase(eos.EquationOfState):
         func = lambda x: bm.birch_murnaghan(params['V_0']/x, params) + \
             self._thermal_pressure(temperature, x, params) - \
             self._thermal_pressure(T_0, x, params) - pressure
-        V = opt.brentq(func, 0.5*params['V_0'], 1.5*params['V_0'])
-        return V
+        try:
+            sol = bracket(func, params['V_0'], 1.e-2*params['V_0'])
+        except:
+            raise ValueError('Cannot find a volume, perhaps you are outside of the range of validity for the equation of state?')
+        return opt.brentq(func, sol[0], sol[1])
 
     def isothermal_bulk_modulus(self, pressure,temperature,volume, params):
         """
@@ -123,11 +127,14 @@ class MGDBase(eos.EquationOfState):
 
     #calculate the thermal correction to the shear modulus as a function of V, T
     def _thermal_shear_modulus(self, T, V, params):
-        gr = self._grueneisen_parameter(params['V_0']/V, params)
-        Debye_T = self._debye_temperature(params['V_0']/V, params)
-        G_th= 3./5. * ( self._thermal_bulk_modulus(T,V,params) - \
-                 6*constants.gas_constant*T*params['n']/V * gr * debye.debye_fn(Debye_T/T) ) # EQ B10
-        return G_th
+        if T > 1.e-10:
+            gr = self._grueneisen_parameter(params['V_0']/V, params)
+            Debye_T = self._debye_temperature(params['V_0']/V, params)
+            G_th= 3./5. * ( self._thermal_bulk_modulus(T,V,params) - \
+                            6*constants.gas_constant*T*params['n']/V * gr * debye.debye_fn(Debye_T/T) ) # EQ B10
+            return G_th
+        else:
+            return 0.
 
     #compute the Debye temperature in K.  Takes the
     #parameter x, which is V_0/V (molar volumes).
@@ -155,11 +162,14 @@ class MGDBase(eos.EquationOfState):
     #calculate the thermal correction for the mgd
     #bulk modulus (see matas et al, 2007)
     def _thermal_bulk_modulus(self, T,V,params):
-        gr = self._grueneisen_parameter(params['V_0']/V, params)
-        Debye_T = self._debye_temperature(params['V_0']/V, params)
-        K_th = 3.*params['n']*constants.gas_constant*T/V * gr * \
-            ((1. - params['q_0'] - 3.*gr)*debye.debye_fn(Debye_T/T)+3.*gr*(Debye_T/T)/(np.exp(Debye_T/T) - 1.)) # EQ B5
-        return K_th
+        if T > 1.e-10:
+            gr = self._grueneisen_parameter(params['V_0']/V, params)
+            Debye_T = self._debye_temperature(params['V_0']/V, params)
+            K_th = 3.*params['n']*constants.gas_constant*T/V * gr * \
+                   ((1. - params['q_0'] - 3.*gr)*debye.debye_fn(Debye_T/T)+3.*gr*(Debye_T/T)/(np.exp(Debye_T/T) - 1.)) # EQ B5
+            return K_th
+        else:
+            return 0.
 
 
     def validate_parameters(self, params):
