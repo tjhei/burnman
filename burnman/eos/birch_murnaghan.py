@@ -47,7 +47,7 @@ def birch_murnaghan(x, params):
     """
 
     return 3.*params['K_0']/2. * (pow(x, 7./3.) - pow(x, 5./3.)) \
-    * (1 - .75*(4-params['Kprime_0'] )*(pow(x, 2./3.) - 1)) + params['P_0']
+    * (1. - .75*(4-params['Kprime_0'] )*(pow(x, 2./3.) - 1.)) + params['P_0']
 
 
 def volume(pressure, params):
@@ -68,7 +68,7 @@ def volume_fourth_order(pressure,params):
     func = lambda x: birch_murnaghan_fourth(x/params['V_0'], params) - pressure
     #print "down",birch_murnaghan_fourth(.1*params['V_0']/params['V_0'], params) - pressure
     #print "up",birch_murnaghan_fourth(200.*params['V_0']/params['V_0'], params) - pressure
-    V = opt.brentq(func, .1*params['V_0'], 1.5*params['V_0'])
+    V = opt.brentq(func, .5*params['V_0'], 1.1*params['V_0'])
     return V
 
 def birch_murnaghan_fourth(x, params):
@@ -207,8 +207,6 @@ class BirchMurnaghanBase(eos.EquationOfState):
             warnings.warn( 'Unusual value for G_0', stacklevel=2 )
         if params['Gprime_0'] < -5. or params['Gprime_0'] > 10.:
             warnings.warn( 'Unusual value for Gprime_0', stacklevel=2 )
-
-
 
 class BM3(BirchMurnaghanBase):
     """
