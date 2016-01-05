@@ -153,18 +153,3 @@ class Fe_Anderson(Mineral):
                 'molar_mass': 0.055845,
                 'n': 1,} #number of atoms per formula unit
         Mineral.__init__(self)
-
-class Liquid_Fe_Anderson(Mineral):
-    """
-    Anderson & Ahrens, 1994 JGR
-    """
-    def __init__(self):
-        self.params = {
-            'equation_of_state': 'bm4',
-            'V_0': 7.95626e-6,
-            'K_0': 109.7e9,
-            'Kprime_0': 4.66,
-            'Kprime_prime_0': -0.043e-9,
-            'molar_mass': 0.055845,
-        }
-        Mineral.__init__(self)
