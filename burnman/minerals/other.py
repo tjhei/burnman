@@ -140,16 +140,3 @@ class Fe_Dewaele(Mineral):
                 'n': 1}
         Mineral.__init__(self)
 
-class Fe_Anderson(Mineral):
-    """
-    Speziale et al. 2007, Mg#=83
-    """
-    def __init__(self):
-        self.params = {
-                'equation_of_state':'vinet',
-                'V_0': (6.72e-6),
-                'K_0': 156.2e9,
-                'Kprime_0': 6.08,
-                'molar_mass': 0.055845,
-                'n': 1,} #number of atoms per formula unit
-        Mineral.__init__(self)
