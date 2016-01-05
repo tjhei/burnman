@@ -37,7 +37,7 @@ def volume(pressure, params):
     pressure :math:`[Pa]`. Returns molar volume in :math:`[m^3]`
     """
 
-    func = lambda x: Vinet(x/params['V_0'], params) - pressure
+    func = lambda x: vinet(x/params['V_0'], params) - pressure
     V = opt.brentq(func, 0.1*params['V_0'], 1.5*params['V_0'])
     return V
 
